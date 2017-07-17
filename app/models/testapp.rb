@@ -1,0 +1,2 @@
+class Testapp < ApplicationRecord
+end

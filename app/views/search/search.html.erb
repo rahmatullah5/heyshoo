@@ -1,0 +1,15 @@
+<h1>Search#search</h1>
+<p>Find me in app/views/search/search.html.erb</p>
+<%= form_tag(search_view_path, :method => "get", id: "search-form") do %>
+  <%= text_field_tag :search, params[:search], id: "q", placeholder: "Search Place" %>
+  <%= submit_tag "Search" , id: "find" %>
+<% end %>
+
+<script>
+     $(function(){
+       $("#q").geocomplete()
+       $("#find").click(function(){
+         $("#q").trigger("geocode");
+       });
+     });
+   </script>

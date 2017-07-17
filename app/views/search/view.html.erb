@@ -1,0 +1,23 @@
+<div class="js-sect-view-search">
+  <table>
+  <tr>
+    <th>Name</th>
+    <th>Address</th>
+    <th>Maps</th>
+  </tr>
+
+  <div map-wrapper data-q="<%= @q %>">
+    <div id="map" style="width: 100%; height: 500px">
+
+    </div>
+  </div>
+  <%= @q %>
+  <% false && @parsed_response["results"].each do |a| %>
+  <tr>
+    <td><%= a["name"] %></td>
+    <td><%= a["formatted_address"] %></td>
+    <td><%= a["id"] %></td>
+  </tr>
+  <% end %>
+  </table>
+</div>
