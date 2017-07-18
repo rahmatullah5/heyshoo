@@ -11,7 +11,8 @@
 // about supported directives.
 //
 //= require jquery
+//= require jquery.geocomplete
+//= require geocomplete
 //= require jquery_ujs
 //= require turbolinks
-//= require jquery.geocomplete
 //= require search
