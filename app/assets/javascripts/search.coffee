@@ -2,6 +2,9 @@ map = undefined
 infowindow = undefined
 numberLabels = 0
 markers = []
+waypts = []
+window.directionsDisplay = new google.maps.DirectionsRenderer()
+window.directionsService = new google.maps.DirectionsService()
 
 getQ = ->
   $('[map-wrapper]').data('q')
@@ -10,7 +13,7 @@ getMarkerUrl = ->
   $('[map-wrapper]').data('icon-url')
 
 initMap = ->
-  new (google.maps.Map)(document.getElementById('map'),
+  window.map = new (google.maps.Map)(document.getElementById('map'),
   center:
     lat: -34.397
     lng: 150.644
@@ -24,16 +27,16 @@ setMapOnAll = (map) ->
     i++
 
 clearTable = ->
-  $('.js-sect-view-search-table-tr-listPlace').find('tr:not(:first-child)').remove()
-# Removes the markers from the map, but keeps them in the array.
+  $('.js-sect-view-search-table-tr-listPlace').find('tr:not(:nth-child(2),:nth-child(1))').remove()
 
 clearMarkers = ->
   setMapOnAll null
 
 FindMyLocation = (map) ->
+  directionsDisplay.setMap null
   clearMarkers()
-  numberLabels = 0
   clearTable()
+  numberLabels = 0
   infoWindow = new (google.maps.InfoWindow)
   if navigator.geolocation
     navigator.geolocation.getCurrentPosition ((position) ->
@@ -117,19 +120,79 @@ createMarker = (place) ->
         map: map
         position: placeLoc
         label: numberLabels.toString()
-        icon: place.icon )
+        )
       markers.push(marker)
       google.maps.event.addListener marker, 'click', ->
         infowindow.setContent '<div><strong>'+place.name + '</strong><br>' + 'Place Rating: ' + place.rating + '<br>'+place.formatted_address+'</div>'
         infowindow.open map, this
-      $('.js-sect-view-search-table-tr-listPlace').append '<tr><td>'+numberLabels+'</td><td>'+place.name+'</td><td>'+place.vicinity+'</td><td>'+place.types+'</td></tr>'
+      $('.js-sect-view-search-table-tr-listPlace').append '
+        <tr>
+          <td>'+numberLabels+'</td>
+          <td>'+place.name+'</td>
+          <td>'+place.formatted_address+'</td>
+          <td>'+place.types+'</td>
+          <td><button class="js-sect-view-search-start">Start</button>
+              <button class="js-sect-view-search-add">Add Destination</button>
+              <button class="js-sect-view-search-end">End</button>
+          </td>
+        </tr>'
 
 
+calculateAndDisplayRoute = () ->
+  clearMarkers()
+  directionsDisplay.setMap map
+  directionsService.route {
+    origin: $(startDestination).parents('tr').find('td')[2].innerHTML
+    destination: $(endDestination).parents('tr').find('td')[2].innerHTML
+    waypoints: waypts
+    optimizeWaypoints: true
+    travelMode: 'DRIVING'
+  }, (response, status) ->
+    if status == 'OK'
+      directionsDisplay.setDirections response
+      console.log(response)
+    else
+      window.alert 'Directions request failed due to ' + status
+  waypts = []
 
+
+onStartClick = ->
+  window.startDestination = @
+  console.log (startDestination)
+  # alert($(startDestination).parents('tr').find('td')[2].innerHTML)
+
+onEndClick = ->
+  window.endDestination = @
+  console.log (endDestination)
+  # alert($(endDestination).parents('tr').find('td')[2].innerHTML)
+
+onAddClick = ->
+  window.addDestination = @
+  i = 0;
+  j = waypts.length
+  if waypts.length > 1
+    while i < waypts.length
+      if waypts[i].location==$(addDestination).parents('tr').find('td')[2].innerHTML
+        return
+      else
+      i++
+    waypts.push
+      location: $(addDestination).parents('tr').find('td')[2].innerHTML
+      stopover: true
+  else
+    waypts.push
+      location: $(addDestination).parents('tr').find('td')[2].innerHTML
+      stopover: true
+  console.log(waypts)
 ready =->
   if ($('.js-sect-view-search-table-tr-listPlace').length)
     console.log(getQ())
     q = getQ()
+    # $(document).on 'click', '.js-sect-view-search-start', calculateAndDisplayRoute
+    $(document).on 'click', '.js-sect-view-search-start', onStartClick
+    $(document).on 'click', '.js-sect-view-search-end', onEndClick
+    $(document).on 'click', '.js-sect-view-search-add', onAddClick
+    $(document).on 'click', '.js-sect-view-search-setNavigation', calculateAndDisplayRoute
     map = initMap()
     codeAddress(map)
     $('#js-sect-view-search-myLocation').click ->

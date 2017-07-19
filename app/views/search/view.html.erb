@@ -5,19 +5,31 @@
     <%= submit_tag "Search" , id: "find" %>
   <% end %>
   <div map-wrapper data-q="<%= @q %>" data-icon-url="<%= asset_url 'markers/store.png' %>">
-    <div id="map" style="width: 100%; height: 500px">
+    <div id="map" class="map1">
     </div>
   </div>
-  <button id="js-sect-view-search-more">More results</button>
-  <button id="js-sect-view-search-myLocation">My Location</button>
-  <!-- <button id="js-sect-view-search-less">Less results</button> -->
-<table class="js-sect-view-search-table-tr-listPlace">
-  <tr>
-    <th>No</th>
-    <th>Name</th>
-    <th>Address</th>
-    <th>Types</th>
-  </tr>
 
+  <table class="js-sect-view-search-table-tr-listPlace">
+    <tr>
+    <td colspan="2">
+      <button id="js-sect-view-search-more">More results</button>
+    </td>
+    <td colspan="2">
+      <button id="js-sect-view-search-myLocation">My Location</button>
+    </td>
+    <td colspan="2">
+      <button class="js-sect-view-search-setNavigation">Set navigation</button>
+    </td>
+    </tr>
+    <tr>
+      <th>No</th>
+      <th>Place Name</th>
+      <th>Address</th>
+      <th>Types</th>
+      <th>Operation</th>
+    </tr>
   </table>
+  <!-- <div id="map1" class="map2">
+
+  </div> -->
 </div>
